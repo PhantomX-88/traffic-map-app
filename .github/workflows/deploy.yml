@@ -1,0 +1,25 @@
+name: Auto Deploy Traffic App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download and unzip project
+        run: |
+          curl -L -o traffic-map-app.zip "https://chat.openai.com/mnt/data/traffic-map-app.zip"
+          unzip -o traffic-map-app.zip -d extracted
+          cp -r extracted/* .
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Auto deploy traffic-map-app from zip" || echo "No changes to commit"
+          git push
